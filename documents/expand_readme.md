@@ -16,6 +16,8 @@ From root:
 ```
 pip install -r requirements.txt
 ```
+#Main api
+Go to django folder
 
 ## Run django
 From root:
@@ -39,4 +41,20 @@ python manage.py test polls
 ## Run integration tests
 ```
 python manage.py test polls.integral_tests
+```
+
+
+#Microservices:
+## Run recommendation-after-choice microservice
+```
+go to microservice1/mysite
+
+python manage.py runserver 8080
+```
+
+## Run user warning microservice
+```
+go to microservice2/mysite
+
+python manage.py runserver 8090
 ```

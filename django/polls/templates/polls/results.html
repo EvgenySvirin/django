@@ -6,9 +6,17 @@
 {% endfor %}
 </ul>
 
+<p>
 {% if comment %}
 <a>{{ comment }}</a>
 {% endif %}
+</p>
+
+<p>
+{% if recommendation %}
+<a>{{ recommendation }}</a>
+{% endif %}
+</p>
 
 <p>
 <a href="{% url 'polls:detail' question.id %}">Vote again?</a>

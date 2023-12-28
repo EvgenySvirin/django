@@ -10,3 +10,16 @@ This is tutorial app with some my expansions.
 {% else %}
     <p>No polls are available.</p>
 {% endif %}
+
+{% if username %}
+<p> You authorized as {{ username }} </p>
+{% if debt %}
+<p> And You have a debt: {{ debt }} </p>
+{% endif %}
+
+{% endif %}
+
+<a href="{% url 'polls:auth' %}"> Authorization</a>
+
+<p> Question ids: 1, 2 </p>
+<p> Choices ids: 1, 2, 4, 5, 6 </p>

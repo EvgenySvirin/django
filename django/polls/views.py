@@ -1,3 +1,6 @@
+import requests
+
+from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -18,11 +21,18 @@ def change_commentator_instance(commentator):
     commentator_instance = commentator
 
 
-class IndexView(generic.ListView):
-    template_name = "polls/index.html"
-    context_object_name = "latest_question_list"
+def payment_request(username):
+    url = "http://localhost:8090/payment/{}/".format(username)
+    response = requests.get(url)
+    return response.content
 
-    def get_queryset(self):
+
+def index(request, username=None):
+    """
+    List of polls
+    """
+
+    def get_queryset():
         """
         Return the last five published questions (not including those set to be
         published in the future).
@@ -30,6 +40,16 @@ class IndexView(generic.ListView):
         return Question.objects.filter(pub_date__lte=timezone.now()).order_by(
             "-pub_date"
         )[:5]
+
+    latest_question_list = get_queryset()
+    context = {"latest_question_list": latest_question_list}
+    if request.user.is_authenticated:
+        context["username"] = request.user
+        res = payment_request(request.user).decode("utf-8")
+        if res != "0" and res != "-1":
+            context["debt"] = res
+
+    return render(request, "polls/index.html", context)
 
 
 class DetailView(generic.DetailView):
@@ -43,6 +63,12 @@ class DetailView(generic.DetailView):
         return Question.objects.filter(pub_date__lte=timezone.now())
 
 
+def recos_request(choice_id):
+    url = "http://localhost:8080/recos/{}/".format(choice_id)
+    response = requests.get(url)
+    return response.content
+
+
 def results(request, choice_id):
     """
     Render result for a selected choice
@@ -54,6 +80,12 @@ def results(request, choice_id):
     question = selected_choice.question
     comment = commentator_instance.handle(request, choice_id)
     context = {"question": question, "comment": comment}
+
+    content = recos_request(choice_id).decode("utf-8")
+    print(content)
+    if not content.startswith("No recommendation"):
+        context["recommendation"] = content
+
     return render(request, "polls/results.html", context)
 
 
@@ -76,4 +108,17 @@ def vote(request, question_id):
             },
         )
     else:
-        return HttpResponseRedirect(reverse("polls:results", args=(choice_id)))
+        return HttpResponseRedirect(reverse("polls:results", args=(choice_id,)))
+
+
+def auth(request):
+    if request.method != "POST":
+        return render(request, "polls/auth.html")
+
+    username = request.POST["login"]
+    password = request.POST["password"]
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return HttpResponseRedirect(reverse("polls:index"))
+    return render(request, "polls/auth.html")
