@@ -18,6 +18,10 @@ comment_dict = {
 }
 
 
+def create_commentator_instance():
+    return Commentator()
+
+
 class Commentator:
     def __init__(self, choices_listener=None):
         self.comment_dict = comment_dict

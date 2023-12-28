@@ -24,8 +24,19 @@ python manage.py runserver
 ```
 
 
-## Run Formatter and Linter
+## Run formatter and linter
 From root:
 ```
 pre-commit run --all-files
+```
+
+## Run module tests
+From root:
+```
+python manage.py test polls
+```
+
+## Run integration tests
+```
+python manage.py test polls.integral_tests
 ```
