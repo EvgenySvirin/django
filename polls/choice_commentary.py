@@ -18,6 +18,10 @@ comment_dict = {
 }
 
 
+def create_commentator_instance():
+    return Commentator()
+
+
 class Commentator:
     def __init__(self, choices_listener=None):
         self.comment_dict = comment_dict
@@ -25,22 +29,20 @@ class Commentator:
         if choices_listener is not None:
             self.choices_listener = dict.fromkeys(choices_listener, 0)
 
-    """
-	Update info for selected choice
-	@param choice_id - id of selected choice
-	"""
-
     def update_listener(self, choice_id):
+        """
+        Update info for selected choice
+        @param choice_id - id of selected choice
+        """
         if self.choices_listener is not None and choice_id in self.choices_listener:
             self.choices_listener[choice_id] += 1
 
-    """
-	Handle choice to update info and give out comment if possible
-	@param request - current request
-	@param choice_id - id of selected choice
-	"""
-
     def handle(self, request, choice_id):
+        """
+        Handle choice to update info and give out comment if possible
+        @param request - current request
+        @param choice_id - id of selected choice
+        """
         handler = self.comment_dict.get(choice_id, None)
 
         self.update_listener(choice_id)
