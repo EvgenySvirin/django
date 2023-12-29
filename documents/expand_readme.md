@@ -45,16 +45,31 @@ python manage.py test polls.integral_tests
 
 
 #Microservices:
-## Run recommendation-after-choice microservice
+## Run recommendation microservice
 ```
 go to microservice1/mysite
 
 python manage.py runserver 8080
 ```
 
-## Run user warning microservice
+## Run paymeny microservice
 ```
 go to microservice2/mysite
 
 python manage.py runserver 8090
+
+```
+
+## Run recommendation microservice test
+```
+go to microservice1/mysite
+
+python manage.py test recos.tests
+```
+
+## Run payment microservice test
+```
+go to microservice2/mysite
+
+python manage.py test payment.tests
 ```

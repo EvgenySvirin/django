@@ -89,3 +89,20 @@ class IntegralTests(TestCase):
 
         response = self.client.get(reverse("polls:results", args=(1,)))
         self.assertEquals(200, response.status_code)
+
+
+class MicroservicesTests(TestCase):
+    def test_comment(self):
+        """
+        Test one comment
+        """
+
+        def preach_bro(request):
+            return "Preach bro, preach"
+
+        comment_dict2 = {1: preach_bro}
+        commentator = Commentator()
+        commentator.comment_dict = comment_dict2
+
+        self.assertEquals(preach_bro(None), commentator.handle(None, 1))
+        self.assertEquals(None, commentator.handle(None, 2))
