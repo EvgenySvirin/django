@@ -23,8 +23,11 @@ def change_commentator_instance(commentator):
 
 def payment_request(username):
     url = "http://localhost:8090/payment/{}/".format(username)
-    response = requests.get(url)
-    return response.content
+    try:
+        response = requests.get(url, timeout=1)
+        return response.content
+    except Exception:
+        return None
 
 
 def index(request, username=None):
@@ -45,9 +48,11 @@ def index(request, username=None):
     context = {"latest_question_list": latest_question_list}
     if request.user.is_authenticated:
         context["username"] = request.user
-        res = payment_request(request.user).decode("utf-8")
-        if res != "0" and res != "-1":
-            context["debt"] = res
+        res = payment_request(request.user)
+        if res is not None:
+            res = res.decode("utf-8")
+            if res != "0" and res != "-1":
+                context["debt"] = res
 
     return render(request, "polls/index.html", context)
 
@@ -65,8 +70,11 @@ class DetailView(generic.DetailView):
 
 def recos_request(choice_id):
     url = "http://localhost:8080/recos/{}/".format(choice_id)
-    response = requests.get(url)
-    return response.content
+    try:
+        response = requests.get(url, timeout=1)
+        return response.content
+    except Exception:
+        return None
 
 
 def results(request, choice_id):
@@ -81,10 +89,11 @@ def results(request, choice_id):
     comment = commentator_instance.handle(request, choice_id)
     context = {"question": question, "comment": comment}
 
-    content = recos_request(choice_id).decode("utf-8")
-    print(content)
-    if not content.startswith("No recommendation"):
-        context["recommendation"] = content
+    content = recos_request(choice_id)
+    if content is not None:
+        content = content.decode("utf-8")
+        if content.startswith("No recommendation"):
+            context["recommendation"] = content
 
     return render(request, "polls/results.html", context)
 
